@@ -230,14 +230,12 @@ for n in tqdm(range(len(news_link))):
 
     date = soup.select('.t11')[0].get_text()[:11]
     data = soup.find_all("div", {"class":"_article_body_contents"})
-    print(data)
 
     if data:
         for item in data:
             text = text + str(item.find_all(text=True)).strip()
             text = ast.literal_eval(text)
             doc = ' '.join(text)
-    #          print(data)
     else:
         doc = "OUTLINK"
 
