@@ -168,7 +168,13 @@ while True:
         if news_target is not None:
             if "naver" in news_target.attrs['href']:
                 news_item_link = news_target.attrs['href']
+                if "sid1=106" in news_item_link:    #연예 기사 크롤링할 때 오류 수정
+                    continue
+                print(news_item_link)
                 news_link.append(news_item_link)
+
+
+
 
     if pbar is not None:
         #        print("pbar update")
@@ -191,7 +197,6 @@ for n in tqdm(range(len(news_link))):
     ########### 긁어온 URL로 접속하기 ############
     try:
         driver.get(news_link[n])
-    #        print(news_link[n])
 
     except:
         print("Error! getting url=" + news_link[n])
@@ -229,6 +234,7 @@ for n in tqdm(range(len(news_link))):
     text = ""
 
     date = soup.select('.t11')[0].get_text()[:11]
+
     data = soup.find_all("div", {"class":"_article_body_contents"})
 
     if data:
