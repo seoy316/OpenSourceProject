@@ -7,7 +7,7 @@ from selenium.common.exceptions import UnexpectedAlertPresentException
 Input_Name = str(input("대학 이름: "))
 Input_Start = str(input("시작 날짜:"))
 Input_End = str(input("종료 날짜:"))
-# Print_File = str(input("저장파일명: "))
+Print_File = Input_Start + "~" + Input_End
 
 driver = webdriver.Chrome('chromedriver')
 
@@ -185,8 +185,8 @@ naver_news_content = []
 for n in tqdm(range(len(news_link))):
 
     #    file_open = open(Print_File + ".txt", 'wt', encoding='UTF8')
-    file_open = open(Input_Start + "~" + Input_End + ".txt", 'r+', encoding='UTF8')
-    file_opened = open("C" + Input_Start + "~" + Input_End + ".txt", 'w', encoding='UTF8')
+    file_open = open(Print_File + ".txt", 'wt', encoding='UTF8')
+    file_opened = open("C" + Print_File + ".txt", 'wt', encoding='UTF8')
 
     ########### 긁어온 URL로 접속하기 ############
     try:
@@ -244,9 +244,13 @@ for n in tqdm(range(len(news_link))):
     naver_news_content.append(date+doc.replace('\n', ' '))
     file_open.write(str(naver_news_content))
 
+    file_open.close()
+
+    file_open =open(Print_File+".txt",'r', encoding='UTF8')
+
     text = file_open.readline()
     clean_before = clean_text(text)
-    file_opened.write(clean_before)
+    file_opened.write(str(clean_before))
 
     file_open.close()
     file_opened.close()
