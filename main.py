@@ -16,14 +16,10 @@ from bs4 import BeautifulSoup
 
 
 def getFirstChild(parent, tagName):
-    #    print(parent)
     for child in parent.children:
         if child.name == tagName:
-            #            print(child)
             return child
-
     return None
-
 
 def getSearchResult(url):
     try:
@@ -72,11 +68,8 @@ def clean_text(text):
     cleaned_text = cleaned_text.replace("동영상 뉴스 오류를 위한 함수 추가", "")
     cleaned_text = cleaned_text.replace("무단전재 및 재배포 금지", "")
     cleaned_text = cleaned_text.replace("  본문 내용     플레이어      플레이어              ", "")
-#    cleaned_text = cleaned_text.replace("", "")
-
 
     return cleaned_text
-
 
 import sys
 import datetime
@@ -98,8 +91,6 @@ last_dt = datetime.datetime.strptime(Input_End, '%Y.%m.%d')
 # start_dt = datetime.datetime.strptime('2020.10.13', '%Y.%m.%d')
 # last_dt = datetime.datetime.strptime('2020.10.14', '%Y.%m.%d')
 
-# last_dt = datetime.datetime.now() - datetime.timedelta(days=365*3)
-
 ds = start_dt.strftime('%Y.%m.%d')
 de = last_dt.strftime('%Y.%m.%d')
 
@@ -120,7 +111,6 @@ while True:
     de = end_dt.strftime('%Y.%m.%d')
 
     url = BASE_URL + urllib.parse.quote(SEARCH_WORD) + "&start=" + str(req_start) + "&ds=" + ds + "&de=" + de
-    #    print(url)
 
     result = getSearchResult(url)
 
@@ -145,8 +135,6 @@ while True:
             continue
         else:
             break
-
-    #    url = BASE_URL + urllib.parse.quote(SEARCH_WORD) + "&start=1&ds=" + ds + "&de=" + de
 
     soup = result[3]
 
@@ -173,11 +161,7 @@ while True:
                 print(news_item_link)
                 news_link.append(news_item_link)
 
-
-
-
     if pbar is not None:
-        #        print("pbar update")
         pbar.update(page_item_count)
 
 if pbar is not None:
@@ -190,7 +174,6 @@ naver_news_content = []
 
 for n in tqdm(range(len(news_link))):
 
-    #    file_open = open(Print_File + ".txt", 'wt', encoding='UTF8')
     file_open = open(Print_File + ".txt", 'wt', encoding='UTF8')
     file_opened = open("C" + Print_File + ".txt", 'wt', encoding='UTF8')
 
@@ -204,7 +187,6 @@ for n in tqdm(range(len(news_link))):
 
     try:
         response = driver.page_source
-
 
     except UnexpectedAlertPresentException:
         driver.Alert.accept()
@@ -220,12 +202,10 @@ for n in tqdm(range(len(news_link))):
     try:
         item = soup.find('div', class_="article_info")
         title = item.find('h3', class_="tts_head").get_text()
-        # print(title)
 
     except:
         title = "OUTLINK"
 
-    # print(title)
     naver_news_title.append(title)
 
     ###### 뉴스 본문 긁어오기 ######
