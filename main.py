@@ -1,13 +1,22 @@
 import ast
+import csv
 import re
 
+import pandas as pd
 from selenium import webdriver
 from selenium.common.exceptions import UnexpectedAlertPresentException
 
 Input_Name = str(input("대학 이름: "))
 Input_Start = str(input("시작 날짜:"))
 Input_End = str(input("종료 날짜:"))
-Print_File = Input_Start + "~" + Input_End
+Print_File = Input_Name[:4] + Input_Start + "~" + Input_End
+
+RESULT_PATH = './report/'
+
+title_text = []  # 뉴스 제목
+date_text = []  # 날짜
+contents_text = []  # 뉴스 내용
+result = {}
 
 driver = webdriver.Chrome('chromedriver')
 
@@ -20,6 +29,7 @@ def getFirstChild(parent, tagName):
         if child.name == tagName:
             return child
     return None
+
 
 def getSearchResult(url):
     try:
@@ -67,9 +77,13 @@ def clean_text(text):
     cleaned_text = cleaned_text.replace("오류를 우회하기 위한 함수 추가", "")
     cleaned_text = cleaned_text.replace("동영상 뉴스 오류를 위한 함수 추가", "")
     cleaned_text = cleaned_text.replace("무단전재 및 재배포 금지", "")
-    cleaned_text = cleaned_text.replace("  본문 내용     플레이어      플레이어              ", "")
-
+    cleaned_text = cleaned_text.replace("본문 내용", "")
+    cleaned_text = cleaned_text.replace("플레이어", "")
+    cleaned_text = cleaned_text.replace("무단 전재 및 재배포 금지", "")
     return cleaned_text
+
+
+
 
 import sys
 import datetime
@@ -156,9 +170,8 @@ while True:
         if news_target is not None:
             if "naver" in news_target.attrs['href']:
                 news_item_link = news_target.attrs['href']
-                if "sid1=106" in news_item_link:    #연예 기사 크롤링할 때 오류 수정
+                if "sid1=106" in news_item_link:  # 연예 기사 크롤링할 때 오류 수정
                     continue
-                print(news_item_link)
                 news_link.append(news_item_link)
 
     if pbar is not None:
@@ -173,9 +186,6 @@ naver_news_title = []
 naver_news_content = []
 
 for n in tqdm(range(len(news_link))):
-
-    file_open = open(Print_File + ".txt", 'wt', encoding='UTF8')
-    file_opened = open("C" + Print_File + ".txt", 'wt', encoding='UTF8')
 
     ########### 긁어온 URL로 접속하기 ############
     try:
@@ -213,30 +223,33 @@ for n in tqdm(range(len(news_link))):
     doc = None
     text = ""
 
-    date = soup.select('.t11')[0].get_text()[:11]
-
-    data = soup.find_all("div", {"class":"_article_body_contents"})
+    date_list = soup.select('.t11')[0].get_text()[:11]
+    date_text.append(date_list)
+    title_list = soup.select_one('#articleTitle').get_text()
+    title_text.append(title_list)
+    data = soup.find_all("div", {"class": "_article_body_contents"})
 
     if data:
         for item in data:
             text = text + str(item.find_all(text=True)).strip()
             text = ast.literal_eval(text)
             doc = ' '.join(text)
+            cleand = clean_text(doc)
     else:
         doc = "OUTLINK"
 
-    naver_news_content.append(date+doc.replace('\n', ' '))
-    file_open.write(str(naver_news_content))
+    contents_text.append(cleand.strip())
+    searchList=[]
+    resulted =[]
+    resulted.append(date_text)
+    resulted.append(title_text)
+    resulted.append(contents_text)
 
-    file_open.close()
+    result = {'date': date_text, 'title': title_text, 'contents': contents_text}
 
-    file_open =open(Print_File+".txt",'r', encoding='UTF8')
-
-    text = file_open.readline()
-    clean_before = clean_text(text)
-    file_opened.write(str(clean_before))
-
-    file_open.close()
-    file_opened.close()
+    outputFileName = Print_File + '.csv'
+    outputFileName2 = Print_File+ "사본" + '.csv'
+    df = pd.DataFrame(result)
+    df.to_csv(RESULT_PATH + outputFileName, encoding='utf-8')
 
 print("Completed!!!")
