@@ -16,3 +16,4 @@ mecab = Mecab()
 for line in read_list:
     print(mecab.pos(line))
 
+#hello
