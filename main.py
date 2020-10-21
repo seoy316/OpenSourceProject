@@ -6,7 +6,7 @@ import pandas as pd
 from selenium import webdriver
 from selenium.common.exceptions import UnexpectedAlertPresentException
 
-Input_Name = str(input("대학 이름: "))
+Input_Name = '경북대학교 "경북대"'  # str(input("대학 이름: "))
 Input_Start = str(input("시작 날짜:"))
 Input_End = str(input("종료 날짜:"))
 Print_File = Input_Name[:4] + Input_Start + "~" + Input_End
@@ -16,7 +16,8 @@ RESULT_PATH = './report/'
 title_text = []  # 뉴스 제목
 date_text = []  # 날짜
 contents_text = []  # 뉴스 내용
-result = {}
+resulted = {}
+result_test = []
 
 driver = webdriver.Chrome('chromedriver')
 
@@ -83,6 +84,12 @@ def clean_text(text):
     return cleaned_text
 
 
+# 날짜 정제화 함수
+def date_cleansing(test):
+    pattern = '\d+.(\d+).(\d+).'  # 정규표현식
+    r = re.compile(pattern)
+    match = r.search(test).group(0)  # 2018.11.05.
+    return match
 
 
 import sys
@@ -101,9 +108,6 @@ total_result_count = 0
 
 start_dt = datetime.datetime.strptime(Input_Start, '%Y.%m.%d')
 last_dt = datetime.datetime.strptime(Input_End, '%Y.%m.%d')
-
-# start_dt = datetime.datetime.strptime('2020.10.13', '%Y.%m.%d')
-# last_dt = datetime.datetime.strptime('2020.10.14', '%Y.%m.%d')
 
 ds = start_dt.strftime('%Y.%m.%d')
 de = last_dt.strftime('%Y.%m.%d')
@@ -161,18 +165,24 @@ while True:
             page_item_count = page_item_count + 1
 
     req_start = req_start + page_item_count
-
     for news in news_lists:
-        news_target = getFirstChild(news,
-                                    "dl")  # 바로 밑의 <dl> <dt><a>...</a></dt> <dd><span>디지털타임스</span>5일 전<a>네이버뉴스</a></dd> </dl>
-        news_target = getFirstChild(news_target, "dd")  # 바로 밑의 <dd>
-        news_target = getFirstChild(news_target, "a")  # 바로 밑의 <a> => Naver뉴스 인 경우만 있다
-        if news_target is not None:
-            if "naver" in news_target.attrs['href']:
-                news_item_link = news_target.attrs['href']
-                if "sid1=106" in news_item_link:  # 연예 기사 크롤링할 때 오류 수정
+        news_target1 = getFirstChild(news,
+                                     "dl")  # 바로 밑의 <dl> <dt><a>...</a></dt> <dd><span>디지털타임스</span>5일 전<a>네이버뉴스</a></dd> </dl>
+        news_target2 = getFirstChild(news_target1, "dd")  # 바로 밑의 <dd>
+        news_target3 = getFirstChild(news_target2, "a")  # 바로 밑의 <a> => Naver뉴스 인 경우만 있다
+        num = 0
+
+        if news_target3 is not None:
+            if "naver" in news_target3.attrs['href']:
+                news_item_link = news_target3.attrs['href']
+                if news_item_link in news_link :    # 중복된 기사는 넘김
                     continue
-                news_link.append(news_item_link)
+                else:
+                    news_link.append(news_item_link)
+                    date_list = news_target1.select('.txt_inline')
+                    date_text.append(date_cleansing(str(date_list)))
+                    title_list = news_target1.find('dt', '').find('a').text.strip("\n\t\r")
+                    title_text.append(title_list)
 
     if pbar is not None:
         pbar.update(page_item_count)
@@ -180,10 +190,12 @@ while True:
 if pbar is not None:
     pbar.close()
 
+
 print(len(news_link))
 
 naver_news_title = []
 naver_news_content = []
+num = 0
 
 for n in tqdm(range(len(news_link))):
 
@@ -223,10 +235,6 @@ for n in tqdm(range(len(news_link))):
     doc = None
     text = ""
 
-    date_list = soup.select('.t11')[0].get_text()[:11]
-    date_text.append(date_list)
-    title_list = soup.select_one('#articleTitle').get_text()
-    title_text.append(title_list)
     data = soup.find_all("div", {"class": "_article_body_contents"})
 
     if data:
@@ -239,17 +247,9 @@ for n in tqdm(range(len(news_link))):
         doc = "OUTLINK"
 
     contents_text.append(cleand.strip())
-    searchList=[]
-    resulted =[]
-    resulted.append(date_text)
-    resulted.append(title_text)
-    resulted.append(contents_text)
 
-    result = {'date': date_text, 'title': title_text, 'contents': contents_text}
-
-    outputFileName = Print_File + '.csv'
-    outputFileName2 = Print_File+ "사본" + '.csv'
-    df = pd.DataFrame(result)
-    df.to_csv(RESULT_PATH + outputFileName, encoding='utf-8')
-
+resulted = {'date': date_text, 'title': title_text, 'contents': contents_text }
+outputFileName = Print_File + '.csv'
+df = pd.DataFrame(resulted)
+df.to_csv(RESULT_PATH + outputFileName, encoding='utf-8')
 print("Completed!!!")
