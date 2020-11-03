@@ -1,6 +1,13 @@
 import pandas as pd
+import csv
+import os
 
-df = pd.read_csv(r"C:\\Users\\USER.LAPTOP-1GI8MJIL\\Desktop\\Team\\OpenSourceProject\\report\\금오공과2015.01.01~2015.12.31.csv")
+df1 = pd.read_csv("./report/금오공과2015.01.01~2015.12.31.csv")
+df2 = pd.read_csv("./report/금오공과2016.01.01~2016.12.31.csv")
+df3 = pd.read_csv("./report/금오공과2017.01.01~2017.12.31.csv")
+df4 = pd.read_csv("./report/금오공과2018.01.01~2018.12.31.csv")
+df5 = pd.read_csv("./report/금오공과2019.01.01~2019.12.31.csv")
+df6 = pd.read_csv("./report/금오공과2020.01.01~2020.10.19.csv")
 
 # print(df)
 
@@ -20,17 +27,43 @@ my_edudic = ["BK21", "EU ICI-ECP", "LINC+", "LINC+", "NCS학습모듈 개발 및
                       "학제간 융합 연구", "한국학 대중화 시범", "한국학 진흥"]
 
 for i in my_edudic:
-    print(i)
-    dfFiltered = df[df["contents"].str.contains(i)]
-    print(dfFiltered["contents"].count())
+    # print(i)
+    dfFiltered1 = df1[df1["contents"].str.contains(i + "사업")]
+    dfFiltered2 = df2[df2["contents"].str.contains(i + "사업")]
+    dfFiltered3 = df3[df3["contents"].str.contains(i + "사업")]
+    dfFiltered4 = df4[df4["contents"].str.contains(i + "사업")]
+    dfFiltered5 = df5[df5["contents"].str.contains(i + "사업")]
+    dfFiltered6 = df6[df6["contents"].str.contains(i + "사업")]
+
+    dfFiltered1 = dfFiltered1.assign(edudic=i)
+    dfFiltered2 = dfFiltered2.assign(edudic=i)
+    dfFiltered3 = dfFiltered3.assign(edudic=i)
+    dfFiltered4 = dfFiltered4.assign(edudic=i)
+    dfFiltered5 = dfFiltered5.assign(edudic=i)
+    dfFiltered6 = dfFiltered6.assign(edudic=i)
+
+    dfFiltered1 = dfFiltered1.reindex(columns=["edudic", "date", "title", "contents"])
+    dfFiltered2 = dfFiltered2.reindex(columns=["edudic", "date", "title", "contents"])
+    dfFiltered3 = dfFiltered3.reindex(columns=["edudic", "date", "title", "contents"])
+    dfFiltered4 = dfFiltered4.reindex(columns=["edudic", "date", "title", "contents"])
+    dfFiltered5 = dfFiltered5.reindex(columns=["edudic", "date", "title", "contents"])
+    dfFiltered6 = dfFiltered6.reindex(columns=["edudic", "date", "title", "contents"])
+
+    # print(dfFiltered1["contents"].count())
     # print(dfFiltered)
 
-    print(dfFiltered)
+    # print(dfFiltered1)
 
-    dfFiltered.to_csv(r"C:\\Users\\USER.LAPTOP-1GI8MJIL\\Desktop\\Team\\OpenSourceProject\\report\\test.csv")
+    dfFiltered1.to_csv("./report/금오공과2015.01.01~2015.12.31_Filtered.csv", index=False, mode='a', encoding='utf-8-sig', header=False)
+    dfFiltered2.to_csv("./report/금오공과2016.01.01~2016.12.31_Filtered.csv", index=False, mode='a', encoding='utf-8-sig', header=False)
+    dfFiltered3.to_csv("./report/금오공과2017.01.01~2017.12.31_Filtered.csv", index=False, mode='a', encoding='utf-8-sig', header=False)
+    dfFiltered4.to_csv("./report/금오공과2018.01.01~2018.12.31_Filtered.csv", index=False, mode='a', encoding='utf-8-sig', header=False)
+    dfFiltered5.to_csv("./report/금오공과2019.01.01~2019.12.31_Filtered.csv", index=False, mode='a', encoding='utf-8-sig', header=False)
+    dfFiltered6.to_csv("./report/금오공과2020.01.01~2020.10.19_Filtered.csv", index=False, mode='a', encoding='utf-8-sig', header=False)
 
-# with open("C:\\Users\\USER.LAPTOP-1GI8MJIL\\Desktop\\Team\\OpenSourceProject\\report\\test.txt", "w", encoding="utf-8") as f:
-#     f.write(str(dfFiltered))
-#     f.write("\n")
 
+    # with open("C:\\Users\\USER.LAPTOP-1GI8MJIL\\Desktop\\Team\\OpenSourceProject\\report\\test.txt", "w", encoding="utf-8") as f:
+    #     f.write(i + "사업")
+    #     f.write(str(dfFiltered))
+    #     f.write("\n")
 
