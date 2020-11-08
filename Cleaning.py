@@ -204,10 +204,27 @@ def clean_text(text):
     cleaned_text = cleaned_text.replace("포항뉴시스", "")
     cleaned_text = cleaned_text.replace("충주뉴시스", "")
     cleaned_text = cleaned_text.replace("익산뉴시스", "")
-    cleaned_text = cleaned_text.replace("포항뉴시스", "")
-    cleaned_text = cleaned_text.replace("포항뉴시스", "")
-    cleaned_text = cleaned_text.replace("포항뉴시스", "")
+    cleaned_text = cleaned_text.replace("청주뉴시스", "")
+    cleaned_text = cleaned_text.replace("제천뉴시스", "")
+    cleaned_text = cleaned_text.replace("구미·천안뉴시스", "")
+    cleaned_text = cleaned_text.replace("음성뉴시스", "")
+    cleaned_text = cleaned_text.replace("군산뉴시스", "")
+    cleaned_text = cleaned_text.replace("구미 뉴시스", "")
+    cleaned_text = cleaned_text.replace("단양뉴시스", "")
+    cleaned_text = cleaned_text.replace("광주뉴시스", "")
+    cleaned_text = cleaned_text.replace("홍천뉴시스", "")
+    cleaned_text = cleaned_text.replace("함안뉴시스", "")
+    cleaned_text = cleaned_text.replace("울산뉴시스", "")
+    cleaned_text = cleaned_text.replace("홍천뉴시스", "")
 
+    cleaned_text = cleaned_text.replace("네이버에서 이  빡침해소   ＜ⓒ종합 경제정보 미디어 이 무단전재 재배포 금지＞", "")
+    cleaned_text = cleaned_text.replace("＜ⓒ종합 경제정보 미디어 이 무단전재 재배포 금지＞", "")
+    cleaned_text = cleaned_text.replace("네이버에서 뉴시스 하기", "")
+    cleaned_text = cleaned_text.replace("네이버 채널에서 뉴시스를 구독해주세요", "")
+    cleaned_text = cleaned_text.replace("뉴시스 페이스북 트위터", "")
+    cleaned_text = cleaned_text.replace("뉴시스 빅데이터 주가시세표", "")
+
+    cleaned_text = cleaned_text.replace("네이버 뉴스 스탠드에서도 만나세요 뉴시스 페이스북 트위터", "")
     cleaned_text = cleaned_text.replace("☞", "")
     cleaned_text = cleaned_text.replace("오늘의 동아일보", "")
     cleaned_text = cleaned_text.replace("동아 기사", "")
@@ -348,7 +365,7 @@ def clean_text(text):
 
 
 
-    return str(cleaned_text)
+    return cleaned_text
 
 
 
